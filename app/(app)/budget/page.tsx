@@ -7,6 +7,9 @@ import {
   type MonthSummary
 } from '@/lib/budget/calcs'
 
+// Force dynamic rendering for authenticated route
+export const dynamic = 'force-dynamic'
+
 // Helper functions
 function getCurrentMonth(): string {
   const now = new Date()

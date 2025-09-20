@@ -1,6 +1,9 @@
 import { redirect } from 'next/navigation'
 import { getUserAndEnsure } from '@/lib/ensureUser'
 
+// Force dynamic rendering for authenticated route
+export const dynamic = 'force-dynamic'
+
 export default async function OnboardingPage() {
   const user = await getUserAndEnsure()
   if (!user) {

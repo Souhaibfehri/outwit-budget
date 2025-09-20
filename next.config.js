@@ -57,15 +57,31 @@ const nextConfig = {
   // Production optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+    // Suppress build warnings for dynamic routes
+    logging: {
+      level: 'error'
+    }
   },
   // Simplified webpack config for Vercel
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
     }
+    
+    // Fix client reference manifest issues
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      }
+    }
+    
     return config
   },
 }
 
 module.exports = nextConfig
+
