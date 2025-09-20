@@ -2,6 +2,8 @@
 const nextConfig = {
   output: 'standalone',
   outputFileTracingRoot: __dirname,
+  // Fix Vercel build tracing issues
+  outputFileTracing: true,
   // Allow build without environment variables
   env: {
     SKIP_ENV_VALIDATION: 'true',
@@ -56,6 +58,19 @@ const nextConfig = {
   // Production optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+  // Fix build tracing issues
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      }
+    }
+    return config
   },
 }
 
