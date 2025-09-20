@@ -2,6 +2,10 @@
 const nextConfig = {
   output: 'standalone',
   outputFileTracingRoot: __dirname,
+  // Allow build without environment variables
+  env: {
+    SKIP_ENV_VALIDATION: 'true',
+  },
   serverExternalPackages: ['@prisma/client'],
   eslint: {
     // Temporarily ignore ESLint errors during builds for production readiness

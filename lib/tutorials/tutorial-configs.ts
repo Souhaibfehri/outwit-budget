@@ -513,21 +513,21 @@ export const TUTORIAL_CONFIGS: Record<string, TutorialConfig> = {
         placement: 'bottom'
       },
       {
-        target: '[data-testid="growth-simulator"], .growth-simulator',
-        title: 'Investment Growth Simulator',
-        content: 'This powerful simulator shows how compound interest works! Adjust parameters to see how different contribution amounts, return rates, and time horizons affect your wealth.',
+        target: '[data-testid="smart-investment-calculator"], .smart-investment-calculator',
+        title: 'Smart Investment Calculator',
+        content: 'This practical calculator helps you plan for retirement with realistic scenarios. Choose your investment strategy and see exactly what you need to reach your goals.',
         placement: 'right'
       },
       {
-        target: 'input[type="number"], .slider-container',
-        title: 'Simulation Controls',
-        content: 'Experiment with different values: initial investment, monthly contributions, return rates, and time periods. See how small changes create massive differences!',
+        target: 'input[type="number"], .investment-strategy',
+        title: 'Investment Strategy Selection',
+        content: 'Choose from 5 realistic investment strategies based on your risk tolerance. Each shows real-world examples and expected returns.',
         placement: 'top'
       },
       {
-        target: '.recharts-wrapper, [data-testid="growth-chart"]',
-        title: 'Visual Growth Chart',
-        content: 'Watch your money grow over time! The chart shows contributions vs. compound interest growth. Notice how interest becomes the bigger portion over time.',
+        target: '.retirement-analysis, [data-testid="retirement-results"]',
+        title: 'Retirement Analysis',
+        content: 'See your projected retirement income using the 4% withdrawal rule. This shows what your investments will actually provide in retirement.',
         placement: 'left'
       },
       {

@@ -43,7 +43,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { exportInvestmentsCSV } from '@/lib/csv-enhanced'
-import { GrowthSimulator } from '@/components/investments/growth-simulator'
+import { SmartInvestmentCalculator } from '@/components/investments/smart-investment-calculator'
 
 interface Investment {
   id: string
@@ -369,8 +369,8 @@ export default function InvestmentsPage() {
         )}
       </AppCard>
 
-      {/* Enhanced Growth Simulator */}
-      <GrowthSimulator />
+      {/* Smart Investment Calculator */}
+      <SmartInvestmentCalculator />
 
       {/* Legacy Growth Simulator Modal */}
       {showSimulator && simulationResult && (
