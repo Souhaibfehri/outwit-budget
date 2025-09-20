@@ -2,7 +2,6 @@
 const nextConfig = {
   // Remove standalone output for Vercel
   // output: 'standalone',
-  // outputFileTracingRoot: __dirname,
   // Allow build without environment variables
   env: {
     SKIP_ENV_VALIDATION: 'true',
@@ -61,19 +60,15 @@ const nextConfig = {
     logging: {
       level: 'error'
     },
-    // Fix client reference manifest issues
-    serverComponentsExternalPackages: [],
   },
-  // Simplified webpack config for Vercel
-  webpack: (config, { isServer }) => {
-    // Basic fallbacks for server-side
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-    }
-    
-    return config
-  },
+  // Remove webpack customizations that cause manifest issues
+  // webpack: (config, { isServer }) => {
+  //   config.resolve.fallback = {
+  //     ...config.resolve.fallback,
+  //     fs: false,
+  //   }
+  //   return config
+  // },
 }
 
 module.exports = nextConfig
