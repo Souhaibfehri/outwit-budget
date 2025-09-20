@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  outputFileTracingRoot: __dirname,
-  // Fix Vercel build tracing issues
-  outputFileTracing: true,
+  // Remove standalone output for Vercel
+  // output: 'standalone',
+  // outputFileTracingRoot: __dirname,
   // Allow build without environment variables
   env: {
     SKIP_ENV_VALIDATION: 'true',
@@ -59,16 +58,11 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
-  // Fix build tracing issues
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        crypto: false,
-      }
+  // Simplified webpack config for Vercel
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
     }
     return config
   },
