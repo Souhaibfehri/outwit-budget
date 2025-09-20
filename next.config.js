@@ -60,23 +60,16 @@ const nextConfig = {
     // Suppress build warnings for dynamic routes
     logging: {
       level: 'error'
-    }
+    },
+    // Fix client reference manifest issues
+    serverComponentsExternalPackages: [],
   },
   // Simplified webpack config for Vercel
   webpack: (config, { isServer }) => {
+    // Basic fallbacks for server-side
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
-    }
-    
-    // Fix client reference manifest issues
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-      }
     }
     
     return config

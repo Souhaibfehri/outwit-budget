@@ -5,6 +5,9 @@ import { SocialProof } from '@/components/marketing/social-proof'
 import { Comparison } from '@/components/marketing/comparison'
 import { FinalCTA } from '@/components/marketing/final-cta'
 
+// Force static generation for marketing page
+export const dynamic = 'force-static'
+
 export default function LandingPage() {
   return (
     <>
