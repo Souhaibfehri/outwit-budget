@@ -26,10 +26,6 @@
     "docker:compose": "docker-compose up -d",
     "health:check": "curl -f http://localhost:3000/api/health || exit 1"
   },
-  "engines": {
-    "node": ">=22.0.0",
-    "npm": ">=8.0.0"
-  },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
