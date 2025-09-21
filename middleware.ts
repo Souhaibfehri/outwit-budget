@@ -63,6 +63,12 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url)
     }
     
+    // Allow direct access to onboarding for authenticated users
+    if (isOnboardingRoute) {
+      // Authenticated users can always access onboarding (to redo it if needed)
+      return supabaseResponse
+    }
+    
     // Check if user needs onboarding (accessing protected routes without completing onboarding)
     if (isProtectedRoute) {
       const metadata = user.user_metadata || {}

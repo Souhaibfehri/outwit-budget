@@ -35,38 +35,11 @@ export function SmartBanners() {
   useEffect(() => {
     async function fetchBanners() {
       try {
-        // Mock banner data - would fetch from /api/dashboard/banners
+        // DISABLED: No tutorial/welcome banners for new users
+        // Users should go through onboarding first, then see relevant banners based on actual data
         const mockBanners: SmartBanner[] = [
-          {
-            id: 'onboarding-complete',
-            type: 'celebration',
-            title: 'Welcome to Outwit Budget! 🎉',
-            message: 'Your account is set up and ready. Start by reviewing your budget or adding your first transaction.',
-            actionText: 'Review Budget',
-            actionHref: '/budget',
-            dismissible: true,
-            priority: 1
-          },
-          {
-            id: 'goal-nudge',
-            type: 'info',
-            title: 'Goal Progress Update',
-            message: 'You\'re 75% of the way to your Emergency Fund goal! Keep up the great work.',
-            actionText: 'Add Money',
-            actionHref: '/goals',
-            dismissible: true,
-            priority: 2
-          },
-          {
-            id: 'over-allocation',
-            type: 'warning',
-            title: 'Budget Over-Allocation Detected',
-            message: 'You\'ve allocated $150 more than your available income this month.',
-            actionText: 'Fix Budget',
-            actionHref: '/budget',
-            dismissible: false,
-            priority: 3
-          }
+          // Only show banners for users with actual data and specific conditions
+          // Welcome banners removed - users get onboarding flow instead
         ]
 
         // Filter out dismissed banners
