@@ -152,4 +152,24 @@ export default async function OnboardingStatusPage() {
       </div>
     </div>
   )
+  } catch (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card>
+          <CardContent className="p-6">
+            <h2 className="text-xl font-bold text-red-600 mb-4">Debug Page Error</h2>
+            <p className="text-red-600 mb-4">Error: {error instanceof Error ? error.message : 'Unknown error'}</p>
+            <div className="space-y-2">
+              <Button asChild>
+                <Link href="/login">Go to Login</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/dashboard">Try Dashboard</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 }
