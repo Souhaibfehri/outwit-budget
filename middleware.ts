@@ -39,6 +39,11 @@ export async function middleware(request: NextRequest) {
     console.log('Supabase not configured, allowing access to public routes')
   }
 
+  // Allow debug routes without authentication
+  if (request.nextUrl.pathname.startsWith('/debug')) {
+    return supabaseResponse
+  }
+
   // Protect app routes (dashboard, budget, etc.)
   const protectedRoutes = ['/dashboard', '/budget', '/bills', '/debts', '/goals', '/investments', '/reports', '/transactions', '/notifications', '/settings', '/income']
   const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
@@ -58,6 +63,16 @@ export async function middleware(request: NextRequest) {
       const metadata = user.user_metadata || {}
       const onboardingCompleted = metadata.onboarding_done || metadata.onboarding_session?.completed
       
+      console.log('🔄 Login/Signup Redirect:', {
+        userId: user.id,
+        email: user.email,
+        pathname: request.nextUrl.pathname,
+        onboarding_done: metadata.onboarding_done,
+        onboarding_session_completed: metadata.onboarding_session?.completed,
+        onboardingCompleted,
+        redirectTo: onboardingCompleted ? '/dashboard' : '/onboarding'
+      })
+      
       const url = request.nextUrl.clone()
       url.pathname = onboardingCompleted ? '/dashboard' : '/onboarding'
       return NextResponse.redirect(url)
@@ -74,10 +89,24 @@ export async function middleware(request: NextRequest) {
       const metadata = user.user_metadata || {}
       const onboardingCompleted = metadata.onboarding_done || metadata.onboarding_session?.completed
       
+      // Debug logging for onboarding detection
+      console.log('🔍 Onboarding Check:', {
+        userId: user.id,
+        email: user.email,
+        pathname: request.nextUrl.pathname,
+        onboarding_done: metadata.onboarding_done,
+        onboarding_session_completed: metadata.onboarding_session?.completed,
+        onboardingCompleted,
+        metadata: JSON.stringify(metadata, null, 2)
+      })
+      
       if (!onboardingCompleted) {
+        console.log('🔄 Redirecting to onboarding - user needs to complete setup')
         const url = request.nextUrl.clone()
         url.pathname = '/onboarding'
         return NextResponse.redirect(url)
+      } else {
+        console.log('✅ User has completed onboarding, allowing access')
       }
     }
   }

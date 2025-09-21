@@ -28,6 +28,10 @@ interface SmartBanner {
 }
 
 export function SmartBanners() {
+  // COMPLETELY DISABLED: No smart banners for now
+  // Users should go through onboarding instead of seeing tutorial cards
+  return null
+  
   const [banners, setBanners] = useState<SmartBanner[]>([])
   const [dismissedBanners, setDismissedBanners] = useState<string[]>([])
   const [loading, setLoading] = useState(true)

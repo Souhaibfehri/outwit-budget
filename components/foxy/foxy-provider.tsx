@@ -56,8 +56,8 @@ interface FoxyProviderProps {
 
 export function FoxyProvider({ children, userId, initialState }: FoxyProviderProps) {
   const [state, setState] = useState<CoachState>({
-    mode: 'tutorial',
-    tutorialProgress: 0,
+    mode: 'coach', // DISABLED: Start in coach mode, not tutorial mode
+    tutorialProgress: 100, // Mark tutorial as completed to prevent auto-start
     completedStepIds: [],
     unlockedBadges: [],
     streakDays: 0,
@@ -103,18 +103,22 @@ export function FoxyProvider({ children, userId, initialState }: FoxyProviderPro
   }
 
   const getCurrentStep = () => {
-    if (state.mode !== 'tutorial' || state.tutorialProgress >= 100) return null
+    // DISABLED: No auto-tutorial steps
+    // Users get tutorials through the new tutorial system instead
+    return null
     
-    const nextStep = TUTORIAL_STEPS.find(step => 
-      !state.completedStepIds.includes(step.id)
-    )
-    
-    if (!nextStep) return null
-
-    return {
-      ...nextStep,
-      totalSteps: TUTORIAL_STEPS.length
-    }
+    // if (state.mode !== 'tutorial' || state.tutorialProgress >= 100) return null
+    // 
+    // const nextStep = TUTORIAL_STEPS.find(step => 
+    //   !state.completedStepIds.includes(step.id)
+    // )
+    // 
+    // if (!nextStep) return null
+    //
+    // return {
+    //   ...nextStep,
+    //   totalSteps: TUTORIAL_STEPS.length
+    // }
   }
 
   const completeStep = async (stepId: string) => {
