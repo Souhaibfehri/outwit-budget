@@ -48,7 +48,7 @@ export default function SignUpPage() {
     setError(null)
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -60,15 +60,43 @@ export default function SignUpPage() {
 
       if (signUpError) {
         setError(signUpError.message)
-      } else {
+        setIsLoading(false)
+      } else if (authData.user) {
+        // Create onboarding status record
+        const onboardingStatus = {
+          userId: authData.user.id,
+          startedAt: new Date().toISOString(),
+          completedAt: null,
+          steps: {
+            profile: false,
+            income: false,
+            bills: false,
+            debts: false,
+            goals: false,
+            review: false
+          }
+        }
+
+        // Update user metadata with onboarding status
+        const { error: updateError } = await supabase.auth.updateUser({
+          data: {
+            name: data.name,
+            onboarding_session: onboardingStatus
+          }
+        })
+
+        if (updateError) {
+          console.error('Failed to create onboarding status:', updateError)
+        }
+
         setSuccess(true)
+        // Redirect to onboarding instead of login
         setTimeout(() => {
-          router.push('/login')
+          router.push('/onboarding')
         }, 2000)
       }
     } catch (error) {
       setError('An unexpected error occurred')
-    } finally {
       setIsLoading(false)
     }
   }
@@ -94,7 +122,7 @@ export default function SignUpPage() {
                 Account created successfully!
               </div>
               <div className="text-gray-400">
-                Check your email to confirm your account, then sign in.
+                Redirecting to onboarding to set up your financial profile...
               </div>
             </div>
           ) : (
@@ -176,15 +204,17 @@ export default function SignUpPage() {
                   )}
                 />
                 {error && (
-                  <div className="text-sm text-red-400 text-center">{error}</div>
+                  <div className="text-sm text-red-400 bg-red-950/20 border border-red-800/30 rounded-lg p-3 text-center">
+                    {error}
+                  </div>
                 )}
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50"
                 >
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Sign Up
+                  {isLoading ? 'Creating Account...' : 'Create Account'}
                 </Button>
               </form>
             </Form>
@@ -196,7 +226,7 @@ export default function SignUpPage() {
               Already have an account?{' '}
               <Link
                 href="/login"
-                className="text-teal-400 hover:text-teal-300 font-medium"
+                className="text-orange-400 hover:text-orange-300 font-medium"
               >
                 Sign in
               </Link>

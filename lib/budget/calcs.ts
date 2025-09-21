@@ -132,7 +132,7 @@ export function calcMonthSummary(data: BudgetData): MonthSummary {
   const isOverAssigned = rta < 0
 
   return {
-    rta,
+    readyToAssign: rta,
     expectedIncome,
     totalAssigned,
     totalSpent,
@@ -152,7 +152,7 @@ export function validateAssignment(
   allowOverAssign: boolean
 ): { isValid: boolean; error?: string; newRTA: number } {
   const difference = newAssignment - currentAssigned
-  const newRTA = monthSummary.rta - difference
+  const newRTA = monthSummary.readyToAssign - difference
   
   if (newRTA < 0 && !allowOverAssign) {
     return {

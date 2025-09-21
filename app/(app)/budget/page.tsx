@@ -6,6 +6,7 @@ import {
   type CategoryBudgetItem,
   type MonthSummary
 } from '@/lib/budget/calcs'
+import { calculateRTA, validateBudgetAllocation } from '@/lib/budget-math'
 
 // Force dynamic rendering for authenticated route
 export const dynamic = 'force-dynamic'

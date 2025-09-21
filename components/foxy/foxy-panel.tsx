@@ -17,6 +17,13 @@ interface FoxyPanelProps {
   isOpen: boolean
   onClose: () => void
   unlockedBadges: string[]
+  mode?: 'tutorial' | 'coach'
+  tutorialProgress?: number
+  currentStep?: any
+  onSwitchMode?: (mode: 'tutorial' | 'coach') => void
+  onCompleteStep?: (stepId: string) => void
+  onSkipStep?: (stepId: string) => void
+  onRestartTutorial?: () => void
 }
 
 
@@ -208,7 +215,7 @@ function CoachChat({
   onInputChange: (value: string) => void
   onSendMessage: () => void
   isLoading: boolean
-  messagesEndRef: React.RefObject<HTMLDivElement>
+  messagesEndRef: React.RefObject<HTMLDivElement | null>
 }) {
   return (
     <div className="flex flex-col h-full">

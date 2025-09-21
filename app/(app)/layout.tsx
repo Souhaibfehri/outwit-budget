@@ -10,6 +10,7 @@ import { TutorialProvider } from '@/components/tutorials/tutorial-provider'
 import { BadgeShowcase } from '@/components/tutorials/badge-showcase'
 import { UserProfileMenu } from '@/components/ui/user-profile-menu'
 import { NotificationsDropdown } from '@/components/ui/notifications-dropdown'
+import { LogoutHandler } from '@/components/ui/logout-handler'
 
 export const metadata: Metadata = {
   title: {
@@ -76,7 +77,12 @@ export default async function AppLayout({
   async function signOut() {
     'use server'
     const supabase = await createClient()
+    
+    // Sign out from Supabase
     await supabase.auth.signOut()
+    
+    // Note: localStorage clearing happens on client side
+    // The client-side components will handle clearing tutorial/badge state
     redirect('/login')
   }
 
@@ -152,6 +158,9 @@ export default async function AppLayout({
       
       {/* Badge Showcase - Left Side */}
       <BadgeShowcase userId={user.id} position="left" />
+      
+      {/* Logout Handler - Clears localStorage on signout */}
+      <LogoutHandler userId={user.id} />
     </div>
     </FoxyProvider>
     </TutorialProvider>

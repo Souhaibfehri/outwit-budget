@@ -1,6 +1,17 @@
 // Real user data service - fetches from Supabase user metadata instead of mock data
 
 import { createClient } from '@/lib/supabase/client'
+import { UserFinancialData, DashboardKpis } from '@/lib/types/dashboard'
+
+// Demo account detection
+export function isDemoAccount(userEmail?: string): boolean {
+  const demoEmails = [
+    'demo@outwitbudget.com',
+    'test@outwitbudget.com',
+    'sample@outwitbudget.com'
+  ]
+  return userEmail ? demoEmails.includes(userEmail.toLowerCase()) : false
+}
 
 export interface UserData {
   // Financial data
@@ -103,17 +114,24 @@ const getEmptyUserData = (): UserData => ({
 })
 
 // Fetch real user data from Supabase metadata
-export async function getUserData(): Promise<UserData> {
+export async function getUserData(): Promise<UserData & { isDemoAccount: boolean }> {
   try {
     const supabase = createClient()
     const { data: { user }, error } = await supabase.auth.getUser()
     
     if (error || !user) {
       console.warn('No authenticated user found, returning empty data')
-      return getEmptyUserData()
+      return { ...getEmptyUserData(), isDemoAccount: false }
     }
 
     const metadata = user.user_metadata || {}
+    const isDemo = isDemoAccount(user.email)
+    
+    // KILL MOCK DATA: Only return demo data if this is a demo account
+    if (!isDemo && process.env.NODE_ENV === 'production') {
+      // In production, non-demo accounts get only their real data
+      console.log('Production mode: returning real user data only')
+    }
     
     // Extract data from user metadata with fallbacks
     const userData: UserData = {
@@ -127,10 +145,10 @@ export async function getUserData(): Promise<UserData> {
       budgetMonth: metadata.budget_months?.[0] || getEmptyUserData().budgetMonth
     }
 
-    return userData
+    return { ...userData, isDemoAccount: isDemo }
   } catch (error) {
     console.error('Error fetching user data:', error)
-    return getEmptyUserData()
+    return { ...getEmptyUserData(), isDemoAccount: false }
   }
 }
 
@@ -221,7 +239,7 @@ export async function updateGoal(goalId: string, updates: Partial<UserData['goal
 }
 
 // Calculate derived metrics
-export function calculateMetrics(userData: UserData) {
+export function calculateMetrics(userData: UserData & { isDemoAccount: boolean }): DashboardKpis {
   const totalIncome = userData.income
     .filter(inc => inc.active)
     .reduce((sum, inc) => {
@@ -247,12 +265,12 @@ export function calculateMetrics(userData: UserData) {
   const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0
 
   return {
+    readyToAssign: 0, // Would be calculated from budget data
+    incomeThisMonth: thisMonthIncome,
+    totalSpentThisMonth: thisMonthExpenses,
     totalIncome,
-    totalExpenses,
-    totalDebt,
-    totalGoalTarget,
-    totalGoalSaved,
+    debtOutstanding: totalDebt,
     savingsRate,
-    netWorth: totalGoalSaved - totalDebt
+    budgetUtilization: 0 // Would be calculated from budget utilization
   }
 }

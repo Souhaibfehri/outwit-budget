@@ -22,11 +22,12 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { DashboardSkeleton } from './components/dashboard-skeleton'
-import { DashboardKPIs } from './components/dashboard-kpis'
+import { DashboardKPIs } from './components/dashboard-kpis-new'
 import { SmartBanners } from './components/smart-banners'
 import { UpcomingItems } from './components/upcoming-items'
 import { QuickActions } from './components/quick-actions'
 import { RecentActivity } from './components/recent-activity'
+import { GoalsWidget } from '@/components/dashboard/goals-widget'
 
 export default function DashboardPage() {
   return (
@@ -67,7 +68,12 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Secondary Content Grid */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Goals Widget */}
+        <Suspense fallback={<Card className="h-96"><CardContent className="p-6">Loading...</CardContent></Card>}>
+          <GoalsWidget />
+        </Suspense>
+
         {/* Upcoming Items */}
         <Suspense fallback={<Card className="h-96"><CardContent className="p-6">Loading...</CardContent></Card>}>
           <UpcomingItems />

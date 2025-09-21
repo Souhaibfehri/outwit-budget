@@ -30,6 +30,7 @@ import {
 } from 'lucide-react'
 import { upsertOnboarding } from '../actions'
 import { toast } from 'sonner'
+import { AvalancheTooltip, SnowballTooltip, APRTooltip } from '@/components/ui/debt-tooltips'
 
 interface Debt {
   id: string
@@ -169,7 +170,7 @@ export default function DebtsStep() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                🏔️ Avalanche Strategy
+                🏔️ <AvalancheTooltip>Avalanche Strategy</AvalancheTooltip>
               </h3>
               <p className="text-sm text-blue-700 dark:text-blue-300">
                 Pay minimums on all debts, then attack the highest interest rate first. 
@@ -178,7 +179,7 @@ export default function DebtsStep() {
             </div>
             <div>
               <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                ⛄ Snowball Strategy
+                ⛄ <SnowballTooltip>Snowball Strategy</SnowballTooltip>
               </h3>
               <p className="text-sm text-blue-700 dark:text-blue-300">
                 Pay minimums on all debts, then attack the smallest balance first. 
@@ -256,7 +257,9 @@ export default function DebtsStep() {
                         />
                       </div>
                       <div>
-                        <Label className="text-gray-700 dark:text-gray-300">Interest Rate (APR %)</Label>
+                        <Label className="text-gray-700 dark:text-gray-300">
+                          <APRTooltip>Interest Rate (APR %)</APRTooltip>
+                        </Label>
                         <Input
                           type="number"
                           step="0.01"

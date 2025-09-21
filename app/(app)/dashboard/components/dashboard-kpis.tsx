@@ -16,6 +16,8 @@ import {
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { getUserData, calculateMetrics } from '@/lib/user-data'
+import { SummaryCard } from '@/components/ui/summary-card'
+import { DashboardKpis } from '@/lib/types/dashboard'
 
 interface DashboardKPIsData {
   monthlyIncome: number
@@ -33,49 +35,33 @@ interface DashboardKPIsData {
 }
 
 export function DashboardKPIs() {
-  const [data, setData] = useState<DashboardKPIsData | null>(null)
+  const [data, setData] = useState<DashboardKpis | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isDemoAccount, setIsDemoAccount] = useState(false)
 
   useEffect(() => {
     async function fetchKPIs() {
       try {
         // Fetch real user data from Supabase
         const userData = await getUserData()
+        
+        // Set demo account flag
+        setIsDemoAccount(userData.isDemoAccount)
+        
+        // Calculate metrics from real user data
         const metrics = calculateMetrics(userData)
         
-        const realData: DashboardKPIsData = {
-          monthlyIncome: Math.round(metrics.totalIncome),
-          readyToAssign: userData.budgetMonth.readyToAssign || 0,
-          thisMonthSpent: Math.round(metrics.totalExpenses),
-          totalDebt: Math.round(metrics.totalDebt),
-          savingsRate: Math.round(metrics.savingsRate * 10) / 10,
-          netWorth: Math.round(metrics.netWorth),
-          trends: {
-            // For now, use placeholder trends - would calculate from historical data
-            income: userData.income.length > 0 ? 4.2 : 0,
-            spending: userData.transactions.length > 0 ? -2.1 : 0,
-            debt: userData.debts.length > 0 ? -5.3 : 0,
-            savings: metrics.savingsRate > 0 ? 8.7 : 0
-          }
-        }
-
-        setData(realData)
+        setData(metrics)
       } catch (error) {
         console.error('Error fetching dashboard KPIs:', error)
         // Fallback to empty data structure
         setData({
-          monthlyIncome: 0,
           readyToAssign: 0,
-          thisMonthSpent: 0,
-          totalDebt: 0,
+          incomeThisMonth: 0,
+          totalSpentThisMonth: 0,
+          debtOutstanding: 0,
           savingsRate: 0,
-          netWorth: 0,
-          trends: {
-            income: 0,
-            spending: 0,
-            debt: 0,
-            savings: 0
-          }
+          budgetUtilization: 0
         })
       } finally {
         setLoading(false)

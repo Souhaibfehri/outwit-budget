@@ -56,10 +56,6 @@ const nextConfig = {
   // Production optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
-    // Suppress build warnings for dynamic routes
-    logging: {
-      level: 'error'
-    },
   },
   // Remove webpack customizations that cause manifest issues
   // webpack: (config, { isServer }) => {

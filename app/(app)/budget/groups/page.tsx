@@ -334,7 +334,7 @@ export default function GroupsManagementPage() {
   const handleDeleteGroup = async (groupId: string) => {
     try {
       const group = groups.find(g => g.id === groupId)
-      if (group?.categoryCount > 0) {
+      if (group?.categoryCount && group.categoryCount > 0) {
         toast.error('Cannot delete group with categories. Move categories first.')
         return
       }

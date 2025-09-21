@@ -2,9 +2,11 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  // Handle large header errors (HTTP 431)
+  try {
+    let supabaseResponse = NextResponse.next({
+      request,
+    })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
@@ -112,6 +114,21 @@ export async function middleware(request: NextRequest) {
   }
 
   return supabaseResponse
+  
+  } catch (error) {
+    console.error('Middleware error:', error)
+    
+    // If it's a header size error, try to continue without auth
+    if (error instanceof Error && (error.message.includes('431') || error.message.includes('header'))) {
+      console.log('🚨 Large header detected, bypassing auth middleware')
+      return NextResponse.next()
+    }
+    
+    // For other errors, redirect to login
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
 }
 
 export const config = {

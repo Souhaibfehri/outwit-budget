@@ -35,6 +35,14 @@ import {
 } from 'lucide-react'
 import { upsertOnboarding } from '../actions'
 import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 interface Bill {
   id: string
@@ -81,6 +89,16 @@ export default function BillsStep() {
   })
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [showCustomModal, setShowCustomModal] = useState(false)
+  const [customBill, setCustomBill] = useState<Bill>({
+    id: '',
+    name: '',
+    amount: 0,
+    frequency: 'monthly',
+    dueDate: '',
+    category: 'Essentials',
+    rollover: false
+  })
 
   // Load saved data
   useEffect(() => {
@@ -130,7 +148,7 @@ export default function BillsStep() {
   }
 
   const addCustomBill = () => {
-    const newBill: Bill = {
+    setCustomBill({
       id: Date.now().toString(),
       name: '',
       amount: 0,
@@ -138,11 +156,31 @@ export default function BillsStep() {
       dueDate: '',
       category: 'Essentials',
       rollover: false
-    }
-    setFormData({
-      ...formData,
-      bills: [...formData.bills, newBill]
     })
+    setShowCustomModal(true)
+  }
+
+  const saveCustomBill = async () => {
+    if (!customBill.name.trim() || customBill.amount <= 0) {
+      toast.error('Please enter a bill name and amount')
+      return
+    }
+
+    try {
+      setFormData({
+        ...formData,
+        bills: [...formData.bills, customBill]
+      })
+      
+      // Auto-save progress
+      await saveProgress()
+      
+      setShowCustomModal(false)
+      toast.success('Custom bill added successfully!')
+    } catch (error) {
+      console.error('Error adding custom bill:', error)
+      toast.error('Failed to add custom bill')
+    }
   }
 
   const updateBill = (id: string, updates: Partial<Bill>) => {
@@ -360,6 +398,110 @@ export default function BillsStep() {
           )}
         </Button>
       </div>
+
+      {/* Custom Bill Modal */}
+      <Dialog open={showCustomModal} onOpenChange={setShowCustomModal}>
+        <DialogContent className="max-w-lg w-[92vw] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add Custom Bill</DialogTitle>
+            <DialogDescription>
+              Create a custom recurring expense that's not in our library
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="custom-name">Bill Name *</Label>
+              <Input
+                id="custom-name"
+                value={customBill.name}
+                onChange={(e) => setCustomBill({ ...customBill, name: e.target.value })}
+                placeholder="e.g., Netflix, Gym Membership"
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="custom-amount">Monthly Amount *</Label>
+              <Input
+                id="custom-amount"
+                type="number"
+                min="0"
+                step="0.01"
+                value={customBill.amount || ''}
+                onChange={(e) => setCustomBill({ ...customBill, amount: parseFloat(e.target.value) || 0 })}
+                placeholder="0.00"
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="custom-frequency">Frequency</Label>
+              <Select 
+                value={customBill.frequency} 
+                onValueChange={(value) => setCustomBill({ ...customBill, frequency: value })}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="quarterly">Quarterly</SelectItem>
+                  <SelectItem value="annual">Annual</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="custom-category">Category</Label>
+              <Select 
+                value={customBill.category} 
+                onValueChange={(value) => setCustomBill({ ...customBill, category: value })}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Essentials">Essentials</SelectItem>
+                  <SelectItem value="Utilities">Utilities</SelectItem>
+                  <SelectItem value="Entertainment">Entertainment</SelectItem>
+                  <SelectItem value="Transportation">Transportation</SelectItem>
+                  <SelectItem value="Health">Health</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="custom-due">Due Date (optional)</Label>
+              <Input
+                id="custom-due"
+                type="date"
+                value={customBill.dueDate}
+                onChange={(e) => setCustomBill({ ...customBill, dueDate: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter className="sticky bottom-0 bg-white dark:bg-gray-800 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setShowCustomModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={saveCustomBill}
+              disabled={!customBill.name.trim() || customBill.amount <= 0}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              Add Bill
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

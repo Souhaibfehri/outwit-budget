@@ -119,34 +119,54 @@ export default function GoalsStep() {
     await upsertOnboarding(formDataObj)
   }
 
-  const addGoalFromTemplate = (template: typeof suggestedGoals[0], quickAmount?: number) => {
-    const newGoal: Goal = {
-      id: Date.now().toString(),
-      name: template.name,
-      target: quickAmount || 0,
-      deadline: '',
-      priority: template.priority,
-      autoSave: template.autoSave
+  const addGoalFromTemplate = async (template: typeof suggestedGoals[0], quickAmount?: number) => {
+    try {
+      const newGoal: Goal = {
+        id: Date.now().toString(),
+        name: template.name,
+        target: quickAmount || 0,
+        deadline: '',
+        priority: template.priority,
+        autoSave: template.autoSave
+      }
+      setFormData({
+        ...formData,
+        goals: [...formData.goals, newGoal]
+      })
+      
+      // Auto-save progress
+      await saveProgress()
+      
+      toast.success(`${template.name} goal added! Set your target amount and deadline.`)
+    } catch (error) {
+      console.error('Error adding goal:', error)
+      toast.error('Failed to add goal')
     }
-    setFormData({
-      ...formData,
-      goals: [...formData.goals, newGoal]
-    })
   }
 
-  const addCustomGoal = () => {
-    const newGoal: Goal = {
-      id: Date.now().toString(),
-      name: '',
-      target: 0,
-      deadline: '',
-      priority: 3,
-      autoSave: 0
+  const addCustomGoal = async () => {
+    try {
+      const newGoal: Goal = {
+        id: Date.now().toString(),
+        name: '',
+        target: 0,
+        deadline: '',
+        priority: 3,
+        autoSave: 0
+      }
+      setFormData({
+        ...formData,
+        goals: [...formData.goals, newGoal]
+      })
+      
+      // Auto-save progress
+      await saveProgress()
+      
+      toast.success('Custom goal added! Fill in the details.')
+    } catch (error) {
+      console.error('Error adding goal:', error)
+      toast.error('Failed to add goal')
     }
-    setFormData({
-      ...formData,
-      goals: [...formData.goals, newGoal]
-    })
   }
 
   const updateGoal = (id: string, updates: Partial<Goal>) => {

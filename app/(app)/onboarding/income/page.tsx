@@ -103,19 +103,30 @@ export default function IncomeStep() {
     await upsertOnboarding(formDataObj)
   }
 
-  const addRecurringIncome = () => {
-    const newIncome: RecurringIncome = {
-      id: Date.now().toString(),
-      name: '',
-      amount: 0,
-      frequency: 'monthly',
-      nextPayDate: estimateNextPayDate('monthly').toISOString().split('T')[0],
-      active: true
+  const addRecurringIncome = async () => {
+    try {
+      const nextPayDate = await estimateNextPayDate('monthly')
+      const newIncome: RecurringIncome = {
+        id: Date.now().toString(),
+        name: '',
+        amount: 0,
+        frequency: 'monthly',
+        nextPayDate: nextPayDate.toISOString().split('T')[0],
+        active: true
+      }
+      setFormData({
+        ...formData,
+        recurring: [...formData.recurring, newIncome]
+      })
+      
+      // Auto-save progress
+      await saveProgress()
+      
+      toast.success('New income source added! Fill in the details.')
+    } catch (error) {
+      console.error('Error adding income:', error)
+      toast.error('Failed to add income source')
     }
-    setFormData({
-      ...formData,
-      recurring: [...formData.recurring, newIncome]
-    })
   }
 
   const updateRecurringIncome = (id: string, updates: Partial<RecurringIncome>) => {

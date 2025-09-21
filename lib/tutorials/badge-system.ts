@@ -220,3 +220,7 @@ export const RARITY_COLORS = {
   epic: 'text-purple-600',
   legendary: 'text-yellow-600'
 }
+
+export function getBadgeDetails(badgeId: string): Badge | undefined {
+  return BADGES[badgeId]
+}
