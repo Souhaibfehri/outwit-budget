@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { UserFinancialData, DashboardKpis } from '@/lib/types/dashboard'
+import { getDatabaseUserData, isUserDataMigrated } from '@/lib/database/user-service'
 
 // Demo account detection
 export function isDemoAccount(userEmail?: string): boolean {

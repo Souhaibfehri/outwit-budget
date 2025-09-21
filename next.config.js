@@ -57,6 +57,22 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
+  // Handle large headers issue
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: '/api/:path*',
+        has: [
+          {
+            type: 'header',
+            key: 'content-length',
+            value: '(?<size>.*)'
+          }
+        ]
+      }
+    ]
+  },
   // Remove webpack customizations that cause manifest issues
   // webpack: (config, { isServer }) => {
   //   config.resolve.fallback = {
