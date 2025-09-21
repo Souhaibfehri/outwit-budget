@@ -72,12 +72,14 @@ export function TutorialProvider({
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState)
+        
         setState(prev => ({
           ...prev,
           completedPages: parsed.completedPages || [],
-          earnedBadges: parsed.earnedBadges || [],
+          earnedBadges: parsed.earnedBadges || [], // Keep earned badges from tutorial completions
           tutorialProgress: getTutorialProgress(parsed.completedPages || [])
         }))
+        
       } catch (error) {
         console.error('Failed to load tutorial state:', error)
       }
@@ -96,17 +98,18 @@ export function TutorialProvider({
     }))
   }
 
-  // Auto-start tutorial for new users after onboarding
-  useEffect(() => {
-    if (hasCompletedOnboarding && state.completedPages.length === 0 && currentPage === 'dashboard') {
-      // Auto-start dashboard tutorial for new users
-      const timer = setTimeout(() => {
-        startTutorial('dashboard')
-      }, 2000) // Give user time to see the dashboard first
-      
-      return () => clearTimeout(timer)
-    }
-  }, [hasCompletedOnboarding, currentPage, state.completedPages.length])
+  // Auto-start tutorial for new users after onboarding - DISABLED
+  // Users can manually start tutorials using the help button instead
+  // useEffect(() => {
+  //   if (hasCompletedOnboarding && state.completedPages.length === 0 && currentPage === 'dashboard') {
+  //     // Auto-start dashboard tutorial for new users
+  //     const timer = setTimeout(() => {
+  //       startTutorial('dashboard')
+  //     }, 2000) // Give user time to see the dashboard first
+  //     
+  //     return () => clearTimeout(timer)
+  //   }
+  // }, [hasCompletedOnboarding, currentPage, state.completedPages.length])
 
   const startTutorial = (page: string) => {
     const config = getTutorialConfig(page)
@@ -156,6 +159,11 @@ export function TutorialProvider({
           earnedBadges: newEarnedBadges,
           tutorialProgress: getTutorialProgress(newCompletedPages)
         }))
+        
+        // Emit event for badge showcase to update
+        window.dispatchEvent(new CustomEvent('tutorial-badge-earned', { 
+          detail: { badgeId: config.badge.id, userId }
+        }))
 
         // Hide celebration after 4 seconds and show success toast
         setTimeout(() => {
@@ -189,11 +197,14 @@ export function TutorialProvider({
     saveTutorialState({
       isActive: false,
       completedPages: [],
-      earnedBadges: [],
+      earnedBadges: [], // Clear all tutorial badges
       tutorialProgress: 0
     })
     
-    toast.success('All tutorials reset! Start with any page.')
+    // Also clear any existing tutorial badges from localStorage
+    localStorage.removeItem(`tutorial-state-${userId}`)
+    
+    toast.success('All tutorials reset! Badges are now earned through real financial actions, not tutorials.')
   }
 
   const currentConfig = getTutorialConfig(state.currentPage)

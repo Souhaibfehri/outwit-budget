@@ -354,7 +354,7 @@ export default function GroupsManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-            <Link href="/app/budget" className="hover:text-foreground">Budget</Link>
+            <Link href="/budget" className="hover:text-foreground">Budget</Link>
             <span>/</span>
             <span>Groups</span>
           </nav>
@@ -366,7 +366,7 @@ export default function GroupsManagementPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/app/budget">
+          <Link href="/budget">
             <Button variant="outline" size="sm" className="card-hover">
               Back to Budget
             </Button>

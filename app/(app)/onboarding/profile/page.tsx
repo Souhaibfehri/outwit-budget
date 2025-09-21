@@ -71,7 +71,7 @@ export default function ProfileStep() {
     setIsLoading(true)
     try {
       await saveProgress()
-      router.push('/app/onboarding/income')
+      router.push('/onboarding/income')
     } catch (error) {
       console.error('Error saving profile:', error)
       toast.error('Failed to save progress')
@@ -82,7 +82,7 @@ export default function ProfileStep() {
 
   const handleSaveAndExit = async () => {
     await saveProgress()
-    router.push('/app/dashboard')
+    router.push('/dashboard')
   }
 
   return (

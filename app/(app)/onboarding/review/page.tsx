@@ -73,7 +73,7 @@ export default function ReviewStep() {
         localStorage.removeItem('onboarding-goals')
         
         setTimeout(() => {
-          router.push('/app/dashboard')
+          router.push('/dashboard')
         }, 3000)
       } else {
         toast.error(result.error || 'Failed to complete onboarding')
@@ -87,7 +87,7 @@ export default function ReviewStep() {
   }
 
   const handleBack = () => {
-    router.push('/app/onboarding/goals')
+    router.push('/onboarding/goals')
   }
 
   if (!reviewData) {
@@ -250,7 +250,7 @@ export default function ReviewStep() {
         <div className="flex items-center space-x-4">
           <Button
             variant="outline"
-            onClick={() => router.push('/app/budget')}
+            onClick={() => router.push('/budget')}
             className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-300 dark:hover:bg-orange-900/40"
           >
             Fine-tune Budget

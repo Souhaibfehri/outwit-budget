@@ -15,7 +15,7 @@ export default async function OnboardingPage() {
   const onboardingSession = metadata.onboarding_session
 
   if (onboardingSession?.completed) {
-    redirect('/app/dashboard')
+    redirect('/dashboard')
   }
 
   // Redirect to current step or start
@@ -23,5 +23,5 @@ export default async function OnboardingPage() {
   const stepRoutes = ['profile', 'income', 'bills', 'debts', 'goals', 'review']
   const targetRoute = stepRoutes[currentStep] || 'profile'
 
-  redirect(`/app/onboarding/${targetRoute}`)
+  redirect(`/onboarding/${targetRoute}`)
 }

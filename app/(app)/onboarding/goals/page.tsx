@@ -169,7 +169,7 @@ export default function GoalsStep() {
     setIsLoading(true)
     try {
       await saveProgress()
-      router.push('/app/onboarding/review')
+      router.push('/onboarding/review')
     } catch (error) {
       console.error('Error saving goals:', error)
       toast.error('Failed to save progress')
@@ -179,12 +179,12 @@ export default function GoalsStep() {
   }
 
   const handleBack = () => {
-    router.push('/app/onboarding/debts')
+    router.push('/onboarding/debts')
   }
 
   const handleSaveAndExit = async () => {
     await saveProgress()
-    router.push('/app/dashboard')
+    router.push('/dashboard')
   }
 
   return (

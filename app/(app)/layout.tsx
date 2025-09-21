@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/components/marketing/theme-toggle'
 import { OutwitLogo } from '@/components/ui/outwit-logo'
 import { FoxyProvider } from '@/components/foxy/foxy-provider'
 import { TutorialProvider } from '@/components/tutorials/tutorial-provider'
+import { BadgeShowcase } from '@/components/tutorials/badge-showcase'
 import { UserProfileMenu } from '@/components/ui/user-profile-menu'
 import { NotificationsDropdown } from '@/components/ui/notifications-dropdown'
 
@@ -148,6 +149,9 @@ export default async function AppLayout({
           {children}
         </main>
       </div>
+      
+      {/* Badge Showcase - Left Side */}
+      <BadgeShowcase userId={user.id} position="left" />
     </div>
     </FoxyProvider>
     </TutorialProvider>

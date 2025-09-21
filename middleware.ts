@@ -42,19 +42,38 @@ export async function middleware(request: NextRequest) {
   // Protect app routes (dashboard, budget, etc.)
   const protectedRoutes = ['/dashboard', '/budget', '/bills', '/debts', '/goals', '/investments', '/reports', '/transactions', '/notifications', '/settings', '/income']
   const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
+  const isOnboardingRoute = request.nextUrl.pathname.startsWith('/onboarding')
   
-  if (!user && isProtectedRoute) {
+  if (!user && (isProtectedRoute || isOnboardingRoute)) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     url.searchParams.set('next', request.nextUrl.pathname)
     return NextResponse.redirect(url)
   }
 
-  // Redirect authenticated users away from auth pages
-  if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+  // Handle authenticated users
+  if (user) {
+    // Redirect away from auth pages
+    if (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup') {
+      const metadata = user.user_metadata || {}
+      const onboardingCompleted = metadata.onboarding_done || metadata.onboarding_session?.completed
+      
+      const url = request.nextUrl.clone()
+      url.pathname = onboardingCompleted ? '/dashboard' : '/onboarding'
+      return NextResponse.redirect(url)
+    }
+    
+    // Check if user needs onboarding (accessing protected routes without completing onboarding)
+    if (isProtectedRoute) {
+      const metadata = user.user_metadata || {}
+      const onboardingCompleted = metadata.onboarding_done || metadata.onboarding_session?.completed
+      
+      if (!onboardingCompleted) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/onboarding'
+        return NextResponse.redirect(url)
+      }
+    }
   }
 
   return supabaseResponse

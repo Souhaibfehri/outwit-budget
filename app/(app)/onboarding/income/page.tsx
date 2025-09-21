@@ -173,7 +173,7 @@ export default function IncomeStep() {
     setIsLoading(true)
     try {
       await saveProgress()
-      router.push('/app/onboarding/bills')
+      router.push('/onboarding/bills')
     } catch (error) {
       console.error('Error saving income:', error)
       toast.error('Failed to save progress')
@@ -183,12 +183,12 @@ export default function IncomeStep() {
   }
 
   const handleBack = () => {
-    router.push('/app/onboarding/profile')
+    router.push('/onboarding/profile')
   }
 
   const handleSaveAndExit = async () => {
     await saveProgress()
-    router.push('/app/dashboard')
+    router.push('/dashboard')
   }
 
   // Calculate estimated monthly income

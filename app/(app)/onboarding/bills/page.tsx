@@ -165,7 +165,7 @@ export default function BillsStep() {
     setIsLoading(true)
     try {
       await saveProgress()
-      router.push('/app/onboarding/debts')
+      router.push('/onboarding/debts')
     } catch (error) {
       console.error('Error saving bills:', error)
       toast.error('Failed to save progress')
@@ -175,12 +175,12 @@ export default function BillsStep() {
   }
 
   const handleBack = () => {
-    router.push('/app/onboarding/income')
+    router.push('/onboarding/income')
   }
 
   const handleSaveAndExit = async () => {
     await saveProgress()
-    router.push('/app/dashboard')
+    router.push('/dashboard')
   }
 
   const filteredLibrary = billsLibrary.filter(bill =>

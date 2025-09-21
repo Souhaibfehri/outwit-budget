@@ -130,7 +130,7 @@ export default function DebtsStep() {
     setIsLoading(true)
     try {
       await saveProgress()
-      router.push('/app/onboarding/goals')
+      router.push('/onboarding/goals')
     } catch (error) {
       console.error('Error saving debts:', error)
       toast.error('Failed to save progress')
@@ -140,12 +140,12 @@ export default function DebtsStep() {
   }
 
   const handleBack = () => {
-    router.push('/app/onboarding/bills')
+    router.push('/onboarding/bills')
   }
 
   const handleSaveAndExit = async () => {
     await saveProgress()
-    router.push('/app/dashboard')
+    router.push('/dashboard')
   }
 
   return (

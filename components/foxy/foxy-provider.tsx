@@ -130,16 +130,17 @@ export function FoxyProvider({ children, userId, initialState }: FoxyProviderPro
     setState(prev => ({ ...prev, ...updates }))
     await saveCoachState(updates)
 
-    // Check for badge unlocks
-    const step = TUTORIAL_STEPS.find(s => s.id === stepId)
-    if (step?.config?.badge) {
-      await unlockBadge(step.config.badge)
-    }
+    // DISABLED: Auto-badge unlocking for steps
+    // Users should earn badges through meaningful actions, not just tutorial completion
+    // const step = TUTORIAL_STEPS.find(s => s.id === stepId)
+    // if (step?.config?.badge) {
+    //   await unlockBadge(step.config.badge)
+    // }
 
-    // Tutorial completion badge
-    if (newProgress >= 100) {
-      await unlockBadge('trailblazer')
-    }
+    // DISABLED: Tutorial completion badge
+    // if (newProgress >= 100) {
+    //   await unlockBadge('trailblazer')
+    // }
   }
 
   const skipStep = async (stepId: string) => {
@@ -181,19 +182,20 @@ export function FoxyProvider({ children, userId, initialState }: FoxyProviderPro
   const emitEvent = async (event: FoxyEvent, metadata?: Record<string, any>) => {
     await foxyEvents.emit(event, userId, metadata)
     
-    // Check for badge unlocks based on events
-    for (const badge of BADGES) {
-      if (badge.unlockRule.event === event && !state.unlockedBadges.includes(badge.id)) {
-        // Check threshold if required
-        if (badge.unlockRule.threshold) {
-          // In a real app, you'd track counts in the database
-          // For now, we'll just unlock on first occurrence
-          continue
-        }
-        
-        await unlockBadge(badge.id)
-      }
-    }
+    // DISABLED: Auto-badge unlocking for events
+    // Users should earn badges through significant achievements, not simple actions
+    // for (const badge of BADGES) {
+    //   if (badge.unlockRule.event === event && !state.unlockedBadges.includes(badge.id)) {
+    //     // Check threshold if required
+    //     if (badge.unlockRule.threshold) {
+    //       // In a real app, you'd track counts in the database
+    //       // For now, we'll just unlock on first occurrence
+    //       continue
+    //     }
+    //     
+    //     await unlockBadge(badge.id)
+    //   }
+    // }
   }
 
   const currentStep = getCurrentStep()

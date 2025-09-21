@@ -31,7 +31,7 @@ export function UserProfileMenu({ userEmail, userId, signOutAction }: UserProfil
   const [earnedBadges, setEarnedBadges] = useState<string[]>([])
 
   useEffect(() => {
-    // Load earned badges from localStorage
+    // Load earned tutorial badges from localStorage
     const savedState = localStorage.getItem(`tutorial-state-${userId}`)
     if (savedState) {
       try {

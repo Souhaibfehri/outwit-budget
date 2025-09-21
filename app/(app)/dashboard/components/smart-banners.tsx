@@ -43,7 +43,7 @@ export function SmartBanners() {
             title: 'Welcome to Outwit Budget! 🎉',
             message: 'Your account is set up and ready. Start by reviewing your budget or adding your first transaction.',
             actionText: 'Review Budget',
-            actionHref: '/app/budget',
+            actionHref: '/budget',
             dismissible: true,
             priority: 1
           },
@@ -53,7 +53,7 @@ export function SmartBanners() {
             title: 'Goal Progress Update',
             message: 'You\'re 75% of the way to your Emergency Fund goal! Keep up the great work.',
             actionText: 'Add Money',
-            actionHref: '/app/goals',
+            actionHref: '/goals',
             dismissible: true,
             priority: 2
           },
@@ -63,7 +63,7 @@ export function SmartBanners() {
             title: 'Budget Over-Allocation Detected',
             message: 'You\'ve allocated $150 more than your available income this month.',
             actionText: 'Fix Budget',
-            actionHref: '/app/budget',
+            actionHref: '/budget',
             dismissible: false,
             priority: 3
           }

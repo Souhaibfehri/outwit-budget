@@ -48,21 +48,22 @@ export async function POST(request: NextRequest) {
     const newCompletedSteps = [...coachState.completedStepIds, stepId]
     const newProgress = Math.floor((newCompletedSteps.length / TUTORIAL_STEPS.length) * 100)
     
-    // Check for badge unlocks
+    // DISABLED: Auto-badge unlocking for tutorial steps
+    // Users should earn badges through meaningful financial actions, not tutorial completion
     const newBadges = [...coachState.unlockedBadges]
     let unlockedBadge = null
 
-    // Step-specific badges
-    if (step.config?.badge && !newBadges.includes(step.config.badge)) {
-      newBadges.push(step.config.badge)
-      unlockedBadge = BADGES.find(b => b.id === step.config.badge)
-    }
+    // // Step-specific badges
+    // if (step.config?.badge && !newBadges.includes(step.config.badge)) {
+    //   newBadges.push(step.config.badge)
+    //   unlockedBadge = BADGES.find(b => b.id === step.config.badge)
+    // }
 
-    // Tutorial completion badge
-    if (newProgress >= 100 && !newBadges.includes('trailblazer')) {
-      newBadges.push('trailblazer')
-      unlockedBadge = BADGES.find(b => b.id === 'trailblazer')
-    }
+    // // Tutorial completion badge
+    // if (newProgress >= 100 && !newBadges.includes('trailblazer')) {
+    //   newBadges.push('trailblazer')
+    //   unlockedBadge = BADGES.find(b => b.id === 'trailblazer')
+    // }
 
     // Update coach state
     const updatedCoachState = {

@@ -20,7 +20,7 @@ export default async function BudgetPage() {
   // Get user data server-side
   const user = await getUserAndEnsure()
   if (!user) {
-    redirect('/app/onboarding')
+    redirect('/onboarding')
   }
 
   const currentMonth = getCurrentMonth()
