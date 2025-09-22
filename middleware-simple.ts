@@ -3,24 +3,24 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Simplified middleware to prevent MIDDLEWARE_INVOCATION_FAILED errors
-  // Complex auth logic moved to page-level components
+  // Simple routing without complex auth logic
+  // This prevents middleware invocation failures
   
   try {
-    // Always allow these critical paths
-    const allowedPaths = [
+    // Always allow public paths
+    const publicPaths = [
       '/', '/login', '/signup', '/migrate', '/debug', '/error',
-      '/api', '/_next', '/favicon.ico', '/auth'
+      '/api', '/_next', '/favicon.ico'
     ]
     
-    const isAllowedPath = allowedPaths.some(path => pathname.startsWith(path))
+    const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
     
-    if (isAllowedPath) {
+    if (isPublicPath) {
       return NextResponse.next()
     }
 
-    // For all other routes, just continue
-    // Let individual pages handle their own authentication
+    // For protected routes, just continue without complex auth
+    // Let the pages handle authentication themselves
     return NextResponse.next()
     
   } catch (error) {
