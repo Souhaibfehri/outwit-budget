@@ -792,6 +792,8 @@ model InvestmentPlanV2 {
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
   
+  contributions InvestmentContributionV2[]
+  
   @@index([userId])
   @@index([accountId])
   @@index([active])
