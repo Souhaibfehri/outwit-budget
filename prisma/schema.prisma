@@ -750,6 +750,27 @@ model IncomeOccurrence {
 }
 
 
+model InvestmentAccountV2 {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation("UserInvestments", fields: [userId], references: [id], onDelete: Cascade)
+  
+  name          String
+  type          String    // BROKERAGE, RETIREMENT, SAVINGS, CRYPTO, OTHER
+  currency      String    @default("USD")
+  trackHoldings Boolean   @default(false)
+  currentValue  Decimal?  @db.Decimal(12,2)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  plans         InvestmentPlanV2[]
+  contributions InvestmentContributionV2[]
+  snapshots     HoldingSnapshot[]
+  
+  @@index([userId])
+}
+
 model InvestmentPlanV2 {
   id            String               @id @default(cuid())
   userId        String
