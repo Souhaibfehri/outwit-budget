@@ -1,8 +1,16 @@
 // Database service layer to replace user metadata storage
 // This solves the REQUEST_HEADER_TOO_LARGE issue permanently
 
-import { prisma } from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
+
+// Optional Prisma import - fallback if not available
+let prisma: any = null
+try {
+  const { prisma: prismaClient } = require('@/lib/prisma')
+  prisma = prismaClient
+} catch (error) {
+  console.warn('Prisma not available, using metadata fallback')
+}
 
 export interface DatabaseUserData {
   userId: string
@@ -79,6 +87,11 @@ export async function getDatabaseUserData(): Promise<DatabaseUserData> {
 
     if (error || !user) {
       throw new Error('Not authenticated')
+    }
+
+    // Check if Prisma is available
+    if (!prisma) {
+      throw new Error('Database not available, using fallback')
     }
 
     // Get user profile from database
