@@ -388,7 +388,7 @@ model Recurrence {
   updatedAt   DateTime  @updatedAt
   
   bills       Bill[]
-  incomes     RecurringIncome[] @relation("IncomeRecurrence")
+  incomes     IncomeRecurring[] @relation("IncomeRecurrence")
   investments InvestmentPlan[]
 }
 
