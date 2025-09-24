@@ -68,15 +68,21 @@ export async function checkHeaderSize(): Promise<HeaderSizeInfo> {
 
 export function redirectToFixIfNeeded(headerInfo: HeaderSizeInfo): boolean {
   if (headerInfo.exceedsLimit) {
-    console.warn('🚨 Header size exceeds limit, redirecting to fix page')
+    console.warn('🚨 Header size exceeds limit, redirecting to appropriate fix page')
     
     // Don't redirect if we're already on a fix page
     const currentPath = window.location.pathname
-    const fixPaths = ['/fix-now', '/fix-headers', '/fix', '/migrate', '/login', '/signup']
+    const fixPaths = ['/fix-now', '/fix-headers', '/fix', '/migrate', '/clear-cookies', '/login', '/signup']
     const isOnFixPage = fixPaths.some(path => currentPath.startsWith(path))
     
     if (!isOnFixPage) {
-      window.location.href = '/fix-now'
+      // If cookies are the main problem (>6KB), redirect to cookie clearing
+      if (headerInfo.cookiesSize > 6000) {
+        window.location.href = '/clear-cookies'
+      } else {
+        // Otherwise, redirect to metadata fix
+        window.location.href = '/fix-now'
+      }
       return true
     }
   }

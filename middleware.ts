@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
     // Always allow fix pages
     const emergencyPaths = [
       '/fix-now', '/fix-headers', '/fix', '/migrate', '/migrate-simple',
-      '/debug', '/error', '/emergency', '/clear-data'
+      '/debug', '/error', '/emergency', '/clear-data', '/clear-cookies'
     ]
     
     // Check if this is an emergency fix path
@@ -34,17 +34,28 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
-    // For ALL other paths (dashboard, etc.), redirect to fix page if headers might be too large
-    // This prevents the header size issue from blocking access
+    // For ALL other paths (dashboard, etc.), redirect to appropriate fix page if headers might be too large
     const userAgent = request.headers.get('user-agent') || ''
     const cookies = request.headers.get('cookie') || ''
+    const authorization = request.headers.get('authorization') || ''
     
-    // Estimate header size (rough calculation)
-    const estimatedHeaderSize = userAgent.length + cookies.length + 2000 // base headers
+    // Analyze what's causing the size issue
+    const cookiesSize = cookies.length
+    const userAgentSize = userAgent.length
+    const authSize = authorization.length
+    const estimatedOtherHeaders = 2000 // Accept, Content-Type, etc.
     
-    // If headers seem large, redirect to fix page
-    if (estimatedHeaderSize > 12000) { // Conservative 12KB limit
-      return NextResponse.redirect(new URL('/fix-now', request.url))
+    const totalEstimated = cookiesSize + userAgentSize + authSize + estimatedOtherHeaders
+    
+    // If headers exceed safe limit, redirect to appropriate fix
+    if (totalEstimated > 12000) { // Conservative 12KB limit
+      // If cookies are the main problem, redirect to cookie clearing
+      if (cookiesSize > 6000) { // Cookies are >6KB
+        return NextResponse.redirect(new URL('/clear-cookies', request.url))
+      } else {
+        // Otherwise, redirect to metadata fix
+        return NextResponse.redirect(new URL('/fix-now', request.url))
+      }
     }
 
     // Otherwise, allow the request
