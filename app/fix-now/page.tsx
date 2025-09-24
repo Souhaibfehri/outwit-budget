@@ -64,51 +64,52 @@ export default function FixNowPage() {
     try {
       const supabase = createClient()
       
-      // IMMEDIATE FIX: Reduce to absolute minimum
-      const minimalData = {
-        // Keep only essential profile data
+      // EMERGENCY: Ultra-minimal metadata to prevent all header issues
+      const ultraMinimalData = {
+        // Only keep absolute essentials
         name: userInfo.metadata.name || 'User',
         currency: userInfo.metadata.currency || 'USD',
         timezone: userInfo.metadata.timezone || 'UTC',
-        onboarding_done: true,
-        
-        // EMERGENCY: Remove all large arrays
-        // Keep tiny sample data only
-        goals: [],
-        debts: [],
-        bills: [],
-        transactions: [],
-        recurring_income: [],
-        investments: [],
         
         // Mark as fixed
         header_fix_applied: true,
-        header_fix_date: new Date().toISOString(),
-        original_size: metadataSize
+        header_fix_date: new Date().toISOString()
       }
 
-      const newSize = JSON.stringify(minimalData).length
-      console.log(`Reducing from ${metadataSize} to ${newSize} bytes`)
+      const newSize = JSON.stringify(ultraMinimalData).length
+      console.log(`EMERGENCY FIX: Reducing from ${metadataSize} to ${newSize} bytes`)
 
-      const { error } = await supabase.auth.updateUser({
-        data: minimalData
+      // Clear all possible metadata sources
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: ultraMinimalData
       })
 
-      if (error) {
-        throw error
+      if (updateError) {
+        throw updateError
       }
 
-      setFixed(true)
-      toast.success(`✅ FIXED! Metadata reduced from ${Math.round(metadataSize/1024)}KB to ${Math.round(newSize/1024)}KB`)
+      // Also clear local storage to prevent client-side issues
+      localStorage.clear()
+      sessionStorage.clear()
       
-      // Redirect after 3 seconds
+      // Clear any cookies that might contribute to header size
+      document.cookie.split(";").forEach((c) => {
+        const eqPos = c.indexOf("=")
+        const name = eqPos > -1 ? c.substr(0, eqPos) : c
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/"
+      })
+
+      setFixed(true)
+      toast.success(`🚀 COMPLETE FIX! Reduced from ${Math.round(metadataSize/1024)}KB to ${Math.round(newSize/1024)}KB`)
+      
+      // Wait a bit longer to ensure changes propagate
       setTimeout(() => {
-        window.location.href = '/dashboard'
-      }, 3000)
+        window.location.href = '/login?fixed=true'
+      }, 4000)
 
     } catch (error) {
       console.error('Error applying fix:', error)
-      toast.error('Failed to apply fix')
+      toast.error(`Fix failed: ${error.message}. Try the manual Supabase method.`)
     } finally {
       setFixing(false)
     }

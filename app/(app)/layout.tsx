@@ -11,6 +11,7 @@ import { BadgeShowcase } from '@/components/tutorials/badge-showcase'
 import { UserProfileMenu } from '@/components/ui/user-profile-menu'
 import { NotificationsDropdown } from '@/components/ui/notifications-dropdown'
 import { LogoutHandler } from '@/components/ui/logout-handler'
+import { HeaderSizeGuard } from '@/components/utils/header-size-guard'
 
 export const metadata: Metadata = {
   title: {
@@ -87,82 +88,84 @@ export default async function AppLayout({
   }
 
   return (
-    <TutorialProvider userId={user.id} hasCompletedOnboarding={user.user_metadata?.onboarding_done || false}>
-      <FoxyProvider userId={user.id}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Sidebar */}
-      <aside className="hidden md:flex md:w-64 md:flex-col">
-        <div className="flex flex-col flex-grow border-r border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/50 backdrop-blur">
-          <div className="flex items-center h-16 px-6 border-b border-gray-200 dark:border-gray-800">
-            <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
-              <OutwitLogo size={40} showText={true} />
-            </Link>
-          </div>
-          <nav className="flex-1 px-4 pb-4 space-y-2 mt-6">
-            {navItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white group"
-                >
-                  <Icon className="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-orange-600 dark:group-hover:text-white transition-colors" />
-                  {item.label}
-                </Link>
-              )
-            })}
-          </nav>
-        </div>
-      </aside>
+    <HeaderSizeGuard>
+      <TutorialProvider userId={user.id} hasCompletedOnboarding={user.user_metadata?.onboarding_done || false}>
+        <FoxyProvider userId={user.id}>
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+            {/* Sidebar */}
+            <aside className="hidden md:flex md:w-64 md:flex-col">
+              <div className="flex flex-col flex-grow border-r border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/50 backdrop-blur">
+                <div className="flex items-center h-16 px-6 border-b border-gray-200 dark:border-gray-800">
+                  <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
+                    <OutwitLogo size={40} showText={true} />
+                  </Link>
+                </div>
+                <nav className="flex-1 px-4 pb-4 space-y-2 mt-6">
+                  {navItems.map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white group"
+                      >
+                        <Icon className="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-orange-600 dark:group-hover:text-white transition-colors" />
+                        {item.label}
+                      </Link>
+                    )
+                  })}
+                </nav>
+              </div>
+            </aside>
 
-      {/* Main content */}
-      <div className="flex flex-col flex-1">
-        {/* Header */}
-        <header className="flex items-center justify-between h-16 px-6 bg-white/95 dark:bg-gray-900/50 backdrop-blur border-b border-gray-200 dark:border-gray-800">
-          <div className="flex items-center gap-4">
-            <button className="md:hidden">
-              <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            </button>
-            {/* Mobile Logo */}
-            <div className="md:hidden">
-              <Link href="/dashboard">
-                <OutwitLogo size={32} showText={true} />
-              </Link>
+            {/* Main content */}
+            <div className="flex flex-col flex-1">
+              {/* Header */}
+              <header className="flex items-center justify-between h-16 px-6 bg-white/95 dark:bg-gray-900/50 backdrop-blur border-b border-gray-200 dark:border-gray-800">
+                <div className="flex items-center gap-4">
+                  <button className="md:hidden">
+                    <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                  </button>
+                  {/* Mobile Logo */}
+                  <div className="md:hidden">
+                    <Link href="/dashboard">
+                      <OutwitLogo size={32} showText={true} />
+                    </Link>
+                  </div>
+                </div>
+                
+                <div className="flex-1" />
+                
+                <div className="flex items-center gap-4">
+                  {/* Theme Toggle */}
+                  <ThemeToggle />
+
+                  {/* Notifications */}
+                  <NotificationsDropdown />
+
+                  {/* User Menu */}
+                  <UserProfileMenu 
+                    userEmail={user.email || 'User'} 
+                    userId={user.id}
+                    signOutAction={signOut}
+                  />
+                </div>
+              </header>
+
+              {/* Page content */}
+              <main className="flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                {children}
+              </main>
             </div>
+            
+            {/* Badge Showcase - Left Side */}
+            <BadgeShowcase userId={user.id} position="left" />
+            
+            {/* Logout Handler - Clears localStorage on signout */}
+            <LogoutHandler userId={user.id} />
           </div>
-          
-          <div className="flex-1" />
-          
-          <div className="flex items-center gap-4">
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
-            {/* Notifications */}
-            <NotificationsDropdown />
-
-            {/* User Menu */}
-            <UserProfileMenu 
-              userEmail={user.email || 'User'} 
-              userId={user.id}
-              signOutAction={signOut}
-            />
-          </div>
-        </header>
-
-        {/* Page content */}
-        <main className="flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-          {children}
-        </main>
-      </div>
-      
-      {/* Badge Showcase - Left Side */}
-      <BadgeShowcase userId={user.id} position="left" />
-      
-      {/* Logout Handler - Clears localStorage on signout */}
-      <LogoutHandler userId={user.id} />
-    </div>
-    </FoxyProvider>
-    </TutorialProvider>
+        </FoxyProvider>
+      </TutorialProvider>
+    </HeaderSizeGuard>
   )
 }
