@@ -400,9 +400,11 @@ export function BudgetPageV2({ month }: BudgetV2PageProps) {
                                   step="0.01"
                                   defaultValue={category.assigned}
                                   className="h-8 w-24 text-sm"
+                                  data-category-id={category.category_id}
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                       updateAssignment(category.category_id, parseFloat(e.currentTarget.value))
+                                      setEditingAssignment(null)
                                     } else if (e.key === 'Escape') {
                                       setEditingAssignment(null)
                                     }
@@ -411,7 +413,13 @@ export function BudgetPageV2({ month }: BudgetV2PageProps) {
                                 />
                                 <Button 
                                   size="sm" 
-                                  onClick={() => setEditingAssignment(null)}
+                                  onClick={() => {
+                                    const input = document.querySelector(`input[data-category-id="${category.category_id}"]`) as HTMLInputElement
+                                    if (input) {
+                                      updateAssignment(category.category_id, parseFloat(input.value))
+                                    }
+                                    setEditingAssignment(null)
+                                  }}
                                 >
                                   Save
                                 </Button>
