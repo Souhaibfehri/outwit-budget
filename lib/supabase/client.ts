@@ -10,19 +10,44 @@ export function createClient() {
     supabaseKey,
     {
       auth: {
-        // Optimize auth settings to prevent large cookies
+        // Use localStorage instead of cookies to avoid Vercel header size limits
+        storage: typeof window !== 'undefined' ? {
+          getItem: (key: string) => {
+            try {
+              return window.localStorage.getItem(key)
+            } catch {
+              return null
+            }
+          },
+          setItem: (key: string, value: string) => {
+            try {
+              window.localStorage.setItem(key, value)
+            } catch {
+              // Ignore storage errors
+            }
+          },
+          removeItem: (key: string) => {
+            try {
+              window.localStorage.removeItem(key)
+            } catch {
+              // Ignore storage errors
+            }
+          }
+        } : undefined,
+        
+        // Optimize auth settings
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
-        // Reduce cookie size by limiting storage
-        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-        // Shorter session duration to prevent large cookies
-        sessionRefreshMargin: 60, // Refresh 1 minute before expiry
+        sessionRefreshMargin: 60,
+        
+        // Use PKCE flow to reduce token size
+        flowType: 'pkce'
       },
       // Global settings to reduce payload size
       global: {
         headers: {
-          'X-Client-Info': 'outwit-budget'
+          'X-Client-Info': 'outwit-budget-localStorage'
         }
       }
     }
