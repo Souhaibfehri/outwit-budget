@@ -7,6 +7,24 @@ export function createClient() {
 
   return createBrowserClient(
     supabaseUrl,
-    supabaseKey
+    supabaseKey,
+    {
+      auth: {
+        // Optimize auth settings to prevent large cookies
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        // Reduce cookie size by limiting storage
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+        // Shorter session duration to prevent large cookies
+        sessionRefreshMargin: 60, // Refresh 1 minute before expiry
+      },
+      // Global settings to reduce payload size
+      global: {
+        headers: {
+          'X-Client-Info': 'outwit-budget'
+        }
+      }
+    }
   )
 }
