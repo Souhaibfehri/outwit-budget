@@ -11,6 +11,7 @@ import {
   Trophy,
   Star
 } from 'lucide-react'
+import { getFirstName } from '@/lib/utils/name-utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -94,7 +95,7 @@ export function UserProfileMenu({ userEmail, userId, signOutAction }: UserProfil
                     >
                       <div className="text-lg mb-1">{badge.emoji}</div>
                       <div className="text-xs font-medium text-gray-900 dark:text-white truncate w-full">
-                        {badge.name.split(' ')[0]}
+                        {getFirstName(badge.name, 'Badge')}
                       </div>
                       
                       {/* Tooltip */}

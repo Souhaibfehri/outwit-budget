@@ -344,7 +344,7 @@ export function SettingsPageV2() {
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold">
-              {profile.full_name ? profile.full_name.charAt(0).toUpperCase() : profile.email.charAt(0).toUpperCase()}
+              {profile.full_name ? profile.full_name.charAt(0).toUpperCase() : (profile.email ? profile.email.charAt(0).toUpperCase() : 'U')}
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100">
@@ -356,7 +356,7 @@ export function SettingsPageV2() {
                   {profile.currency}
                 </Badge>
                 <Badge className="bg-purple-100 text-purple-800 border-purple-200">
-                  {profile.timezone.split('/')[1]?.replace('_', ' ') || profile.timezone}
+                  {profile.timezone ? (profile.timezone.split('/')[1]?.replace('_', ' ') || profile.timezone) : 'UTC'}
                 </Badge>
                 {profile.householdMode && (
                   <Badge className="bg-green-100 text-green-800 border-green-200">
