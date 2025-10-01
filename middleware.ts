@@ -1,71 +1,66 @@
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // EMERGENCY: Ultra-minimal middleware to bypass header size issues
-  // NO Supabase calls, NO auth checks - just basic routing
-  
   try {
-    // Always allow fix pages
-    const emergencyPaths = [
+    // Always allow these paths without auth checks
+    const publicPaths = [
+      '/', '/login', '/signup', '/auth/callback',
       '/fix-now', '/fix-headers', '/fix', '/migrate', '/migrate-simple',
       '/debug', '/error', '/emergency', '/clear-data', '/clear-cookies'
     ]
     
-    // Check if this is an emergency fix path
-    const isEmergencyPath = emergencyPaths.some(path => pathname.startsWith(path))
-    if (isEmergencyPath) {
+    const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
+    if (isPublicPath) {
       return NextResponse.next()
     }
 
     // Always allow static assets and API routes
-    const staticPaths = [
-      '/_next', '/favicon.ico', '/api', '/auth/callback'
-    ]
-    
+    const staticPaths = ['/_next', '/favicon.ico', '/api']
     const isStaticPath = staticPaths.some(path => pathname.startsWith(path))
     if (isStaticPath) {
       return NextResponse.next()
     }
 
-    // For login/signup, allow without checks
-    if (pathname === '/login' || pathname === '/signup' || pathname === '/') {
-      return NextResponse.next()
-    }
+    // Create Supabase client for auth check
+    let supabaseResponse = NextResponse.next({ request })
 
-    // For ALL other paths (dashboard, etc.), redirect to appropriate fix page if headers might be too large
-    const userAgent = request.headers.get('user-agent') || ''
-    const cookies = request.headers.get('cookie') || ''
-    const authorization = request.headers.get('authorization') || ''
-    
-    // Analyze what's causing the size issue
-    const cookiesSize = cookies.length
-    const userAgentSize = userAgent.length
-    const authSize = authorization.length
-    const estimatedOtherHeaders = 2000 // Accept, Content-Type, etc.
-    
-    const totalEstimated = cookiesSize + userAgentSize + authSize + estimatedOtherHeaders
-    
-    // If headers exceed safe limit, redirect to appropriate fix
-    if (totalEstimated > 12000) { // Conservative 12KB limit
-      // If cookies are the main problem, redirect to cookie clearing
-      if (cookiesSize > 6000) { // Cookies are >6KB
-        return NextResponse.redirect(new URL('/clear-cookies', request.url))
-      } else {
-        // Otherwise, redirect to metadata fix
-        return NextResponse.redirect(new URL('/fix-now', request.url))
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              request.cookies.set(name, value)
+              supabaseResponse.cookies.set(name, value, options)
+            })
+          },
+        },
       }
+    )
+
+    // Check if user is authenticated
+    const { data: { user }, error } = await supabase.auth.getUser()
+
+    if (error || !user) {
+      // Not authenticated - redirect to login
+      return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // Otherwise, allow the request
-    return NextResponse.next()
-    
+    // User is authenticated - allow request
+    return supabaseResponse
+
   } catch (error) {
     console.error('Middleware error:', error)
     
-    // On any error, redirect to fix page instead of failing
-    return NextResponse.redirect(new URL('/fix-now', request.url))
+    // On any error, redirect to login instead of failing
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 }
 

@@ -7,6 +7,15 @@ export function createClient() {
 
   return createBrowserClient(
     supabaseUrl,
-    supabaseKey
+    supabaseKey,
+    {
+      auth: {
+        // Use default cookie storage (not localStorage)
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        sessionRefreshMargin: 60, // Refresh 1 minute before expiry
+      }
+    }
   )
 }

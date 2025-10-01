@@ -19,16 +19,32 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Skip only extremely large cookies that cause header size issues
-              if (value && value.length > 4000) { // Skip cookies larger than 4KB
+              // Handle Supabase auth cookies properly
+              if (name.includes('supabase') || name.includes('auth') || name.includes('sb-')) {
+                // Set proper auth cookie options
+                const authCookieOptions = {
+                  ...options,
+                  secure: process.env.NODE_ENV === 'production',
+                  sameSite: 'lax' as const,
+                  httpOnly: true,
+                  path: '/',
+                  // Allow auth cookies to persist properly
+                  maxAge: options?.maxAge || 60 * 60 * 24 * 7, // 7 days default
+                }
+                cookieStore.set(name, value, authCookieOptions)
+                return
+              }
+              
+              // For other cookies, apply size limits
+              if (value && value.length > 4000) {
                 console.warn(`Skipping large cookie: ${name} (${value.length} bytes)`)
                 return
               }
               
-              // Set optimized cookie options for Vercel compatibility
+              // Set optimized cookie options for other cookies
               const optimizedOptions = {
                 ...options,
-                maxAge: Math.min(options?.maxAge || 3600, 3600), // Max 1 hour
+                maxAge: Math.min(options?.maxAge || 3600, 3600), // Max 1 hour for non-auth
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax' as const,
                 httpOnly: true
