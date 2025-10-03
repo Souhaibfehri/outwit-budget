@@ -19,32 +19,38 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Handle Supabase auth cookies properly
+              // Skip large cookies that cause header size issues
+              if (value && value.length > 3000) {
+                console.warn(`Skipping large cookie: ${name} (${value.length} bytes) - causes header size issues`)
+                return
+              }
+              
+              // Handle Supabase auth cookies with minimal size
               if (name.includes('supabase') || name.includes('auth') || name.includes('sb-')) {
-                // Set proper auth cookie options
+                // Use minimal cookie options for auth
                 const authCookieOptions = {
                   ...options,
                   secure: process.env.NODE_ENV === 'production',
                   sameSite: 'lax' as const,
                   httpOnly: true,
                   path: '/',
-                  // Allow auth cookies to persist properly
-                  maxAge: options?.maxAge || 60 * 60 * 24 * 7, // 7 days default
+                  // Shorter maxAge to reduce persistence issues
+                  maxAge: Math.min(options?.maxAge || 3600, 3600), // Max 1 hour
                 }
                 cookieStore.set(name, value, authCookieOptions)
                 return
               }
               
-              // For other cookies, apply size limits
-              if (value && value.length > 4000) {
-                console.warn(`Skipping large cookie: ${name} (${value.length} bytes)`)
+              // For other cookies, apply strict size limits
+              if (value && value.length > 2000) {
+                console.warn(`Skipping large non-auth cookie: ${name} (${value.length} bytes)`)
                 return
               }
               
               // Set optimized cookie options for other cookies
               const optimizedOptions = {
                 ...options,
-                maxAge: Math.min(options?.maxAge || 3600, 3600), // Max 1 hour for non-auth
+                maxAge: Math.min(options?.maxAge || 1800, 1800), // Max 30 minutes for non-auth
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax' as const,
                 httpOnly: true
