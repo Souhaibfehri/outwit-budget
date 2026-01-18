@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { createFallbackClient, isSupabaseDisabled } from './fallback-client'
 
 export async function createClient() {
   const cookieStore = await cookies()
@@ -7,6 +8,10 @@ export async function createClient() {
   // Provide fallback values for build time
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+
+  if (isSupabaseDisabled()) {
+    return createFallbackClient()
+  }
 
   return createServerClient(
     supabaseUrl,
