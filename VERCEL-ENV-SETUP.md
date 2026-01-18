@@ -119,5 +119,31 @@ Your app will have:
 - **Use your live domain** for NEXTAUTH_URL
 - **All variables are case-sensitive**
 - **Preview deployments need the same variables** or Vercel checks will fail for pull requests
+- **Do not edit `vercel.json` with extra braces** — it should remain valid JSON (see below).
+
+```json
+{
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    }
+  ]
+}
+```
 
 **After adding these variables, redeploy and your app will be fully functional!** 🚀✨
