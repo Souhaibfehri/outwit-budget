@@ -118,5 +118,6 @@ Your app will have:
 - **Keep service_role key secret** (server-side only)
 - **Use your live domain** for NEXTAUTH_URL
 - **All variables are case-sensitive**
+- **Preview deployments need the same variables** or Vercel checks will fail for pull requests
 
 **After adding these variables, redeploy and your app will be fully functional!** 🚀✨
