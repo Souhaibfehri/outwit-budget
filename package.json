@@ -17,6 +17,7 @@
     "prisma:studio": "prisma studio",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
+    "demo:user": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/create-demo-user.ts",
     "deploy": "bash scripts/deploy.sh",
     "deploy:vercel": "bash scripts/deploy.sh vercel",
     "deploy:production": "bash scripts/deploy.sh production",
