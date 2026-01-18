@@ -1,9 +1,14 @@
 import { createBrowserClient } from '@supabase/ssr'
+import { createFallbackClient, isSupabaseDisabled } from './fallback-client'
 
 export function createClient() {
   // Provide fallback values for build time
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+
+  if (isSupabaseDisabled()) {
+    return createFallbackClient()
+  }
 
   return createBrowserClient(
     supabaseUrl,
