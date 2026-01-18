@@ -71,26 +71,26 @@ export default async function AppLayout({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/login')
-  }
-
   async function signOut() {
     'use server'
     const supabase = await createClient()
-    
+
     // Sign out from Supabase
     await supabase.auth.signOut()
-    
+
     // Note: localStorage clearing happens on client side
     // The client-side components will handle clearing tutorial/badge state
     redirect('/login')
   }
 
+  const showAuthenticatedUI = Boolean(user)
+  const resolvedUserId = user?.id ?? 'guest'
+  const hasCompletedOnboarding = user?.user_metadata?.onboarding_done || false
+
   return (
     <HeaderSizeGuard>
-      <TutorialProvider userId={user.id} hasCompletedOnboarding={user.user_metadata?.onboarding_done || false}>
-        <FoxyProvider userId={user.id}>
+      <TutorialProvider userId={resolvedUserId} hasCompletedOnboarding={hasCompletedOnboarding}>
+        <FoxyProvider userId={resolvedUserId}>
           <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
             {/* Sidebar */}
             <aside className="hidden md:flex md:w-64 md:flex-col">
@@ -133,36 +133,49 @@ export default async function AppLayout({
                     </Link>
                   </div>
                 </div>
-                
+
                 <div className="flex-1" />
-                
+
                 <div className="flex items-center gap-4">
                   {/* Theme Toggle */}
                   <ThemeToggle />
 
-                  {/* Notifications */}
-                  <NotificationsDropdown />
+                  {showAuthenticatedUI && (
+                    <>
+                      {/* Notifications */}
+                      <NotificationsDropdown />
 
-                  {/* User Menu */}
-                  <UserProfileMenu 
-                    userEmail={user.email || 'User'} 
-                    userId={user.id}
-                    signOutAction={signOut}
-                  />
+                      {/* User Menu */}
+                      <UserProfileMenu
+                        userEmail={user!.email || 'User'}
+                        userId={user!.id}
+                        signOutAction={signOut}
+                      />
+                    </>
+                  )}
                 </div>
               </header>
 
               {/* Page content */}
               <main className="flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                {!showAuthenticatedUI && (
+                  <div className="mb-4 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-900 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-100">
+                    Guest mode: authentication is disabled so you can preview the app UI.
+                  </div>
+                )}
                 {children}
               </main>
             </div>
-            
-            {/* Badge Showcase - Left Side */}
-            <BadgeShowcase userId={user.id} position="left" />
-            
-            {/* Logout Handler - Clears localStorage on signout */}
-            <LogoutHandler userId={user.id} />
+
+            {showAuthenticatedUI && (
+              <>
+                {/* Badge Showcase - Left Side */}
+                <BadgeShowcase userId={user!.id} position="left" />
+
+                {/* Logout Handler - Clears localStorage on signout */}
+                <LogoutHandler userId={user!.id} />
+              </>
+            )}
           </div>
         </FoxyProvider>
       </TutorialProvider>
